@@ -8,4 +8,5 @@ if (!shell.which('git')) {
     shell.exit(1);
 }
 
-shell.exec('git pull git@github.com:n9e/fe-v5.git')
+shell.exec('curl -o https://github.com/n9e/fe-v5/archive/refs/heads/master.zip')
+
