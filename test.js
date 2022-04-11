@@ -10,6 +10,8 @@ if (!shell.which('git')) {
 
 shell.exec('wget https://github.com/n9e/fe-v5/archive/refs/heads/master.zip')
 
-shell.exec('unzip master.zip')
+shell.exec('unzip master.zip -d fe-v5')
 
 shell.exec('ls')
+
+shell.exec('ls fe-v5')
