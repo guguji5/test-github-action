@@ -8,5 +8,6 @@ if (!shell.which('git')) {
     shell.exit(1);
 }
 
-shell.exec('curl -o https://github.com/n9e/fe-v5/archive/refs/heads/master.zip')
+shell.exec('wget https://github.com/n9e/fe-v5/archive/refs/heads/master.zip')
 
+shell.exec('ls')
