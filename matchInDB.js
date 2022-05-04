@@ -21,7 +21,7 @@ async function run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio,
     const database = client.db("stock");
     const holder = database.collection("holder");
     const holderList = await holder
-      .find({code:'300068'}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
+      .find({}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
       .toArray();
       let  codeList = filterHolderBy(holderList, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}).map((item) => item.code);
 
@@ -119,7 +119,7 @@ function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquid
     console.log('6. 机构持仓占流通股比例 - 其他机构持股比例', jgccDiff, Number(liquidStockReduceRatio))
     console.log('股东人数季度 减少 大于1000人', gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM ,  Number(holderReduce))
     if (
-      filterList.length >= Number(numOfholderType) && sdltgd[9] && 
+      filterList.length >= Number(numOfholderType) && sdltgd && sdltgd[9] && 
       sdltgd[9].FREE_HOLDNUM_RATIO >= Number(tenthLiquidStockRatio) &&
       gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= Number(holderReduce) &&
       jgccDiff >= Number(liquidStockReduceRatio)
