@@ -119,8 +119,8 @@ function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquid
     console.log('6. 机构持仓占流通股比例 - 其他机构持股比例', jgccDiff, Number(liquidStockReduceRatio))
     console.log('股东人数季度 减少 大于1000人', gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM ,  Number(holderReduce))
     if (
-      filterList.length >= Number(numOfholderType) && filterList[9] && 
-      filterList[9].FREE_HOLDNUM_RATIO >= Number(tenthLiquidStockRatio) &&
+      filterList.length >= Number(numOfholderType) && sdltgdList[9] && 
+      sdltgdList[9].FREE_HOLDNUM_RATIO >= Number(tenthLiquidStockRatio) &&
       gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= Number(holderReduce) &&
       jgccDiff >= Number(liquidStockReduceRatio)
     ) {
