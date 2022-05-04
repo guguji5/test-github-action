@@ -108,7 +108,7 @@ function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquid
         : 0;
     var jgccDiff = jgccTotal - jgcc07;
     if (
-      filterList.length >= Number(numOfholderType) &&
+      filterList.length >= Number(numOfholderType) &&filterList[9] && 
       filterList[9].FREE_HOLDNUM_RATIO >= Number(tenthLiquidStockRatio) &&
       gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= Number(holderReduce) &&
       jgccDiff >= Number(liquidStockReduceRatio)
