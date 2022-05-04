@@ -2,8 +2,6 @@ const fs = require("fs");
 var shell = require("shelljs");
 const {genPrefix} = require('./index')
 
-console.log(genPrefix)
-
 const { url } = require("./webapi/db");
 const { MongoClient } = require("mongodb");
 // 1. 十大流通股东机构 or 基金 or 证券公司 .etc 反正不是个人 投资公司 其它 >= 5 numOfholderType
@@ -76,7 +74,7 @@ async function getPriceAndPE(code, { PE, PB, Price }) {
   const [_1, pb] = output.match(PBReg);
   const [_2, price] = output.match(PriceReg);
   console.log(pe, pb);
-  if (pb < PB && pe < PE) {
+  if (pb < Number(PB) && pe < Number(PE)) {
     return true;
   } else {
     return false;
@@ -85,7 +83,7 @@ async function getPriceAndPE(code, { PE, PB, Price }) {
 
 // async function run(){
 //   let result = []
-//   const codeList=[301050, 600089]
+//   const codeList=['300068']
 //   for(let i=0; i< codeList.length;i++){
 //     const b = await getPriceAndPE(codeList[i], {PE:100, PB:100, Price:0})
 //     b && result.push(codeList[i])
@@ -95,6 +93,7 @@ async function getPriceAndPE(code, { PE, PB, Price }) {
 // run()
 
 function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}) {
+
   return list.filter(({ gdrs, sdltgd, jgcc }) => {
     // 股东人数
     var gdrsList = gdrs;
@@ -114,8 +113,12 @@ function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquid
         ? jgccList.find((item) => item.ORG_TYPE === "07").TOTAL_SHARES_RATIO
         : 0;
     var jgccDiff = jgccTotal - jgcc07;
+    console.log('第10大流通股东 占比大于0.8%',filterList[9].FREE_HOLDNUM_RATIO , Number(tenthLiquidStockRatio) )
+    console.log('十大流通股东机构 or 基金 or 证券公司 .etc 反正不是个人 投资公司 其它 >= 5', filterList.length,  Number(numOfholderType) )
+    console.log('6. 机构持仓占流通股比例 - 其他机构持股比例', jgccDiff, Number(liquidStockReduceRatio))
+    console.log('股东人数季度 减少 大于1000人', gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM ,  Number(holderReduce))
     if (
-      filterList.length >= Number(numOfholderType) &&filterList[9] && 
+      filterList.length >= Number(numOfholderType) && filterList[9] && 
       filterList[9].FREE_HOLDNUM_RATIO >= Number(tenthLiquidStockRatio) &&
       gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= Number(holderReduce) &&
       jgccDiff >= Number(liquidStockReduceRatio)
