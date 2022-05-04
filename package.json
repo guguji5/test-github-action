@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "chalk": "^5.0.1",
+    "koa": "^2.13.4",
     "mongodb": "^4.5.0"
   }
 }

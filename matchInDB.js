@@ -41,9 +41,6 @@ async function run() {
 }
 run().catch(console.dir);
 
-// var finacialOutput = shell.exec(finacialCmd).stdout;
-// // 主要指标
-// var zzzbList = JSON.parse(finacialOutput).data;
 
 function filterHolderBy(list) {
   return list.filter(({ gdrs, sdltgd, jgcc }) => {
@@ -69,8 +66,6 @@ function filterHolderBy(list) {
       filterList.length >= 5 &&
       sdltgd[9].FREE_HOLDNUM_RATIO >= 0.8 &&
       gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= 1000 &&
-      //   zzzbList[0].EPSJB >= 0.15 &&
-      //   zzzbList[0].EPSJB > zzzbList[4].EPSJB &&
       jgccDiff >= 10
     ) {
       return true;
