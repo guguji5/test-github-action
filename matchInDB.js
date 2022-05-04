@@ -1,57 +1,62 @@
 const fs = require("fs");
 var shell = require("shelljs");
-const { url } = require("./webapi/db");
-const { MongoClient } = require("mongodb");
-// 1. 十大流通股东机构 or 基金 or 证券公司 .etc 反正不是个人 投资公司 其它 >= 5 numOfholderType
-// 2. 第10大流通股东 占比大于0.8% tenthLiquidStockRatio
-// 3. 股东人数季度 减少 大于1000人 holderReduce
-// 4. 基本每股收益(元) > 0.15 eps
-// 5. 基本每股收益(元) 同比增长
-// 6. 机构持仓占流通股比例 - 其他机构持股比例 > 10% liquidStockReduceRatio
-// 7. 市盈率：小于等于20倍 PE
-// 8. 市净率：小于等于3.5倍 PB
-// 9. 价格 Price
+const {genPrefix} = require('./index')
 
-const client = new MongoClient(url);
-async function run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps, PE, PB, Price}) {
-  try {
-    await client.connect();
-    const database = client.db("stock");
-    const holder = database.collection("holder");
-    const holderList = await holder
-      .find({}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
-      .toArray();
-      let  codeList = filterHolderBy(holderList, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}).map((item) => item.code);
+console.log(genPrefix)
 
-    const finacial = database.collection("finacial");
-    const finacialList = await finacial
-      .find({ code: { $in: codeList } }, { data: 1, code: 1 })
-      .toArray();
+// const { url } = require("./webapi/db");
+// const { MongoClient } = require("mongodb");
+// // 1. 十大流通股东机构 or 基金 or 证券公司 .etc 反正不是个人 投资公司 其它 >= 5 numOfholderType
+// // 2. 第10大流通股东 占比大于0.8% tenthLiquidStockRatio
+// // 3. 股东人数季度 减少 大于1000人 holderReduce
+// // 4. 基本每股收益(元) > 0.15 eps
+// // 5. 基本每股收益(元) 同比增长
+// // 6. 机构持仓占流通股比例 - 其他机构持股比例 > 10% liquidStockReduceRatio
+// // 7. 市盈率：小于等于20倍 PE
+// // 8. 市净率：小于等于3.5倍 PB
+// // 9. 价格 Price
 
-    codeList = finacialList.filter(({ data, code }) => {
-      if (data[0].EPSJB >= Number(eps) && data[0].EPSJB > data[4].EPSJB) {
-        return true;
-      } else {
-        return false;
-      }
-    }).map((item) => item.code);
+// const client = new MongoClient(url);
+// async function run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps, PE, PB, Price}) {
+//   try {
+//     await client.connect();
+//     const database = client.db("stock");
+//     const holder = database.collection("holder");
+//     const holderList = await holder
+//       .find({}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
+//       .toArray();
+//       let  codeList = filterHolderBy(holderList, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}).map((item) => item.code);
 
-    let result = []
-    for(let i=0; i< codeList.length;i++){
-      const b = await getPriceAndPE(codeList[i], {PE, PB, Price})
-      b && result.push(codeList[i])
-    }
+//     const finacial = database.collection("finacial");
+//     const finacialList = await finacial
+//       .find({ code: { $in: codeList } }, { data: 1, code: 1 })
+//       .toArray();
 
-    return result
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
+//     codeList = finacialList.filter(({ data, code }) => {
+//       if (data[0].EPSJB >= Number(eps) && data[0].EPSJB > data[4].EPSJB) {
+//         return true;
+//       } else {
+//         return false;
+//       }
+//     }).map((item) => item.code);
+
+//     let result = []
+//     for(let i=0; i< codeList.length;i++){
+//       const b = await getPriceAndPE(codeList[i], {PE, PB, Price})
+//       b && result.push(codeList[i])
+//     }
+
+//     return result
+//   } finally {
+//     // Ensures that the client will close when you finish/error
+//     await client.close();
+//   }
+// }
 
 async function getPriceAndPE(code, { PE, PB, Price }) {
   console.log('code', code)
-  const cmd = `curl 'http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&invt=2&fltt=2&fields=f43,f57,f58,f169,f170,f46,f44,f51,f168,f47,f164,f163,f116,f60,f45,f52,f50,f48,f167,f117,f71,f161,f49,f530,f135,f136,f137,f138,f139,f141,f142,f144,f145,f147,f148,f140,f143,f146,f149,f55,f62,f162,f92,f173,f104,f105,f84,f85,f183,f184,f185,f186,f187,f188,f189,f190,f191,f192,f107,f111,f86,f177,f78,f110,f260,f261,f262,f263,f264,f267,f268,f250,f251,f252,f253,f254,f255,f256,f257,f258,f266,f269,f270,f271,f273,f274,f275,f127,f199,f128,f193,f196,f194,f195,f197,f80,f280,f281,f282,f284,f285,f286,f287,f292,f293,f181,f294,f295,f279,f288&secid=0.${code}&wbp2u=|0|0|0|web&cb=jQuery112403599250038852819_1651649339070&_=${new Date().getTime()}' \
+  const prefix = genPrefix(code) === 'SZ' ? 0: 1
+  const cmd = `curl 'http://push2.eastmoney.com/api/qt/stock/get?ut=fa5fd1943c7b386f172d6893dbfba10b&invt=2&fltt=2&fields=f43,f57,f58,f169,f170,f46,f44,f51,f168,f47,f164,f163,f116,f60,f45,f52,f50,f48,f167,f117,f71,f161,f49,f530,f135,f136,f137,f138,f139,f141,f142,f144,f145,f147,f148,f140,f143,f146,f149,f55,f62,f162,f92,f173,f104,f105,f84,f85,f183,f184,f185,f186,f187,f188,f189,f190,f191,f192,f107,f111,f86,f177,f78,f110,f260,f261,f262,f263,f264,f267,f268,f250,f251,f252,f253,f254,f255,f256,f257,f258,f266,f269,f270,f271,f273,f274,f275,f127,f199,f128,f193,f196,f194,f195,f197,f80,f280,f281,f282,f284,f285,f286,f287,f292,f293,f181,f294,f295,f279,f288&secid=${prefix}.${code}&wbp2u=|0|0|0|web&cb=jQuery112403599250038852819_1651649339070&_=${new Date().getTime()}' \
   -H 'Accept: */*' \
   -H 'Accept-Language: zh-CN,zh;q=0.9,en;q=0.8' \
   -H 'Cache-Control: no-cache' \
@@ -78,15 +83,15 @@ async function getPriceAndPE(code, { PE, PB, Price }) {
   }
 }
 
-// async function run(){
-//   let result = []
-//   const codeList=[300260, 301101]
-//   for(let i=0; i< codeList.length;i++){
-//     const b = await getPriceAndPE(codeList[i], {PE:100, PB:100, Price:0})
-//     b && result.push(codeList[i])
-//   }
-//   console.log(result)
-// }
+async function run(){
+  let result = []
+  const codeList=[301050, 600089]
+  for(let i=0; i< codeList.length;i++){
+    const b = await getPriceAndPE(codeList[i], {PE:100, PB:100, Price:0})
+    b && result.push(codeList[i])
+  }
+  console.log(result)
+}
 // run()
 
 function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}) {
@@ -122,6 +127,6 @@ function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquid
   });
 }
 
-module.exports = {
-    run
-};
+// module.exports = {
+//     run
+// };

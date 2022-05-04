@@ -29,8 +29,12 @@ function genPrefix(str){
    console.log(str,'not found prefix')
    return 
 }
-for(var i=0;i< stockList.length;i++){
-    var prefix = genPrefix(stockList[i].trim())
-    console.log(i)
-    prefix && shell.exec(`node matchHolders.js --code=${prefix}${stockList[i].trim()}`)
-}
+// for(var i=0;i< stockList.length;i++){
+//     var prefix = genPrefix(stockList[i].trim())
+//     console.log(i)
+//     prefix && shell.exec(`node matchHolders.js --code=${prefix}${stockList[i].trim()}`)
+// }
+
+module.exports = {
+    genPrefix
+};
