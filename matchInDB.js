@@ -4,54 +4,54 @@ const {genPrefix} = require('./index')
 
 console.log(genPrefix)
 
-// const { url } = require("./webapi/db");
-// const { MongoClient } = require("mongodb");
-// // 1. 十大流通股东机构 or 基金 or 证券公司 .etc 反正不是个人 投资公司 其它 >= 5 numOfholderType
-// // 2. 第10大流通股东 占比大于0.8% tenthLiquidStockRatio
-// // 3. 股东人数季度 减少 大于1000人 holderReduce
-// // 4. 基本每股收益(元) > 0.15 eps
-// // 5. 基本每股收益(元) 同比增长
-// // 6. 机构持仓占流通股比例 - 其他机构持股比例 > 10% liquidStockReduceRatio
-// // 7. 市盈率：小于等于20倍 PE
-// // 8. 市净率：小于等于3.5倍 PB
-// // 9. 价格 Price
+const { url } = require("./webapi/db");
+const { MongoClient } = require("mongodb");
+// 1. 十大流通股东机构 or 基金 or 证券公司 .etc 反正不是个人 投资公司 其它 >= 5 numOfholderType
+// 2. 第10大流通股东 占比大于0.8% tenthLiquidStockRatio
+// 3. 股东人数季度 减少 大于1000人 holderReduce
+// 4. 基本每股收益(元) > 0.15 eps
+// 5. 基本每股收益(元) 同比增长
+// 6. 机构持仓占流通股比例 - 其他机构持股比例 > 10% liquidStockReduceRatio
+// 7. 市盈率：小于等于20倍 PE
+// 8. 市净率：小于等于3.5倍 PB
+// 9. 价格 Price
 
-// const client = new MongoClient(url);
-// async function run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps, PE, PB, Price}) {
-//   try {
-//     await client.connect();
-//     const database = client.db("stock");
-//     const holder = database.collection("holder");
-//     const holderList = await holder
-//       .find({}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
-//       .toArray();
-//       let  codeList = filterHolderBy(holderList, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}).map((item) => item.code);
+const client = new MongoClient(url);
+async function run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps, PE, PB, Price}) {
+  try {
+    await client.connect();
+    const database = client.db("stock");
+    const holder = database.collection("holder");
+    const holderList = await holder
+      .find({}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
+      .toArray();
+      let  codeList = filterHolderBy(holderList, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}).map((item) => item.code);
 
-//     const finacial = database.collection("finacial");
-//     const finacialList = await finacial
-//       .find({ code: { $in: codeList } }, { data: 1, code: 1 })
-//       .toArray();
+    const finacial = database.collection("finacial");
+    const finacialList = await finacial
+      .find({ code: { $in: codeList } }, { data: 1, code: 1 })
+      .toArray();
 
-//     codeList = finacialList.filter(({ data, code }) => {
-//       if (data[0].EPSJB >= Number(eps) && data[0].EPSJB > data[4].EPSJB) {
-//         return true;
-//       } else {
-//         return false;
-//       }
-//     }).map((item) => item.code);
+    codeList = finacialList.filter(({ data, code }) => {
+      if (data[0].EPSJB >= Number(eps) && data[0].EPSJB > data[4].EPSJB) {
+        return true;
+      } else {
+        return false;
+      }
+    }).map((item) => item.code);
 
-//     let result = []
-//     for(let i=0; i< codeList.length;i++){
-//       const b = await getPriceAndPE(codeList[i], {PE, PB, Price})
-//       b && result.push(codeList[i])
-//     }
+    let result = []
+    for(let i=0; i< codeList.length;i++){
+      const b = await getPriceAndPE(codeList[i], {PE, PB, Price})
+      b && result.push(codeList[i])
+    }
 
-//     return result
-//   } finally {
-//     // Ensures that the client will close when you finish/error
-//     await client.close();
-//   }
-// }
+    return result
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
 
 async function getPriceAndPE(code, { PE, PB, Price }) {
   console.log('code', code)
@@ -83,15 +83,15 @@ async function getPriceAndPE(code, { PE, PB, Price }) {
   }
 }
 
-async function run(){
-  let result = []
-  const codeList=[301050, 600089]
-  for(let i=0; i< codeList.length;i++){
-    const b = await getPriceAndPE(codeList[i], {PE:100, PB:100, Price:0})
-    b && result.push(codeList[i])
-  }
-  console.log(result)
-}
+// async function run(){
+//   let result = []
+//   const codeList=[301050, 600089]
+//   for(let i=0; i< codeList.length;i++){
+//     const b = await getPriceAndPE(codeList[i], {PE:100, PB:100, Price:0})
+//     b && result.push(codeList[i])
+//   }
+//   console.log(result)
+// }
 // run()
 
 function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}) {
@@ -127,6 +127,6 @@ function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquid
   });
 }
 
-// module.exports = {
-//     run
-// };
+module.exports = {
+    run
+};
