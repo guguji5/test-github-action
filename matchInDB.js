@@ -27,7 +27,7 @@ async function run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio,
       .toArray();
 
     codeList = finacialList.filter(({ data, code }) => {
-      if (data[0].EPSJB >= eps && data[0].EPSJB > data[4].EPSJB) {
+      if (data[0].EPSJB >= Number(eps) && data[0].EPSJB > data[4].EPSJB) {
         return true;
       } else {
         return false;
@@ -43,7 +43,6 @@ async function run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio,
 
 
 function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}) {
-
   return list.filter(({ gdrs, sdltgd, jgcc }) => {
     // 股东人数
     var gdrsList = gdrs;
@@ -64,10 +63,10 @@ function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquid
         : 0;
     var jgccDiff = jgccTotal - jgcc07;
     if (
-      filterList.length >= numOfholderType &&
-      filterList[9].FREE_HOLDNUM_RATIO >= tenthLiquidStockRatio &&
-      gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= holderReduce &&
-      jgccDiff >= liquidStockReduceRatio
+      filterList.length >= Number(numOfholderType) &&
+      filterList[9].FREE_HOLDNUM_RATIO >= Number(tenthLiquidStockRatio) &&
+      gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= Number(holderReduce) &&
+      jgccDiff >= Number(liquidStockReduceRatio)
     ) {
       return true;
     } else {
