@@ -21,7 +21,7 @@ async function run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio,
     const database = client.db("stock");
     const holder = database.collection("holder");
     const holderList = await holder
-      .find({}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
+      .find({code:'300068'}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
       .toArray();
       let  codeList = filterHolderBy(holderList, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}).map((item) => item.code);
 
