@@ -1,17 +1,17 @@
 const fs = require("fs");
 const { url } = require("./webapi/db");
 const { MongoClient } = require("mongodb");
-// 1. 十大流通股东机构 or 基金 or 证券公司 .etc 反正不是个人 投资公司 其它 >= 5
-// 2. 第10大流通股东 占比大于0.8%
-// 3. 股东人数季度 减少 大于1000人
-// 4. 基本每股收益(元) > 0.15
+// 1. 十大流通股东机构 or 基金 or 证券公司 .etc 反正不是个人 投资公司 其它 >= 5 numOfholderType
+// 2. 第10大流通股东 占比大于0.8% tenthLiquidStockRatio
+// 3. 股东人数季度 减少 大于1000人 holderReduce
+// 4. 基本每股收益(元) > 0.15 eps
 // 5. 基本每股收益(元) 同比增长
-// 6. 机构持仓占流通股比例 - 其他机构持股比例 > 10%
+// 6. 机构持仓占流通股比例 - 其他机构持股比例 > 10% liquidStockReduceRatio
 // 7. 市盈率：小于等于20倍
 // 8. 市净率：小于等于3.5倍
 
 const client = new MongoClient(url);
-async function run() {
+async function run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}) {
   try {
     await client.connect();
     const database = client.db("stock");
@@ -19,7 +19,7 @@ async function run() {
     const holderList = await holder
       .find({}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
       .toArray();
-    let  codeList = filterHolderBy(holderList).map((item) => item.code);
+    let  codeList = filterHolderBy(holderList, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}).map((item) => item.code);
 
     const finacial = database.collection("finacial");
     const finacialList = await finacial
@@ -27,22 +27,23 @@ async function run() {
       .toArray();
 
     codeList = finacialList.filter(({ data, code }) => {
-      if (data[0].EPSJB >= 0.15 && data[0].EPSJB > data[4].EPSJB) {
+      if (data[0].EPSJB >= eps && data[0].EPSJB > data[4].EPSJB) {
         return true;
       } else {
         return false;
       }
     }).map((item) => item.code);
-    console.log(codeList)
+    return codeList
   } finally {
     // Ensures that the client will close when you finish/error
     await client.close();
   }
 }
-run().catch(console.dir);
 
 
-function filterHolderBy(list) {
+
+function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}) {
+
   return list.filter(({ gdrs, sdltgd, jgcc }) => {
     // 股东人数
     var gdrsList = gdrs;
@@ -63,10 +64,10 @@ function filterHolderBy(list) {
         : 0;
     var jgccDiff = jgccTotal - jgcc07;
     if (
-      filterList.length >= 5 &&
-      sdltgd[9].FREE_HOLDNUM_RATIO >= 0.8 &&
-      gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= 1000 &&
-      jgccDiff >= 10
+      filterList.length >= numOfholderType &&
+      sdltgd[9].FREE_HOLDNUM_RATIO >= tenthLiquidStockRatio &&
+      gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= holderReduce &&
+      jgccDiff >= liquidStockReduceRatio
     ) {
       return true;
     } else {
@@ -74,3 +75,8 @@ function filterHolderBy(list) {
     }
   });
 }
+
+
+module.exports = {
+    run
+};
