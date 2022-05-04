@@ -1,5 +1,5 @@
 const fs = require("fs");
-const {url} = require('./webapi/db');
+const { url } = require("./webapi/db");
 const { MongoClient } = require("mongodb");
 // 1. 十大流通股东机构 or 基金 or 证券公司 .etc 反正不是个人 投资公司 其它 >= 5
 // 2. 第10大流通股东 占比大于0.8%
@@ -17,13 +17,23 @@ async function run() {
     const database = client.db("stock");
     const holder = database.collection("holder");
     const holderList = await holder
-      .find(
-        {  },
-        { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 }
-      )
+      .find({}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
       .toArray();
-      const codeList = filterBy(holderList).map(item=> item.code)
-      console.log(codeList)
+    let  codeList = filterBy(holderList).map((item) => item.code);
+
+    const finacial = database.collection("finacial");
+    const finacialList = await finacial
+      .find({ code: { $in: codeList } }, { data: 1, code: 1 })
+      .toArray();
+
+    codeList = finacialList.filter(({ data, code }) => {
+      if (data[0].EPSJB >= 0.15 && data[0].EPSJB > data[4].EPSJB) {
+        return true;
+      } else {
+        return false;
+      }
+    }).map((item) => item.code);
+    console.log(codeList)
   } finally {
     // Ensures that the client will close when you finish/error
     await client.close();
@@ -35,8 +45,8 @@ run().catch(console.dir);
 // // 主要指标
 // var zzzbList = JSON.parse(finacialOutput).data;
 
-function filterBy(list) {
-  return list.filter(({gdrs,sdltgd,jgcc }) => {
+function filterHolderBy(list) {
+  return list.filter(({ gdrs, sdltgd, jgcc }) => {
     // 股东人数
     var gdrsList = gdrs;
     var filterList = sdltgd
@@ -59,14 +69,13 @@ function filterBy(list) {
       filterList.length >= 5 &&
       sdltgd[9].FREE_HOLDNUM_RATIO >= 0.8 &&
       gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= 1000 &&
-    //   zzzbList[0].EPSJB >= 0.15 &&
-    //   zzzbList[0].EPSJB > zzzbList[4].EPSJB &&
+      //   zzzbList[0].EPSJB >= 0.15 &&
+      //   zzzbList[0].EPSJB > zzzbList[4].EPSJB &&
       jgccDiff >= 10
     ) {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
   });
 }
-
