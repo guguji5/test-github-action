@@ -19,7 +19,7 @@ async function run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio,
     const holderList = await holder
       .find({}, { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 })
       .toArray();
-    let  codeList = filterHolderBy(holderList, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}).map((item) => item.code);
+      let  codeList = filterHolderBy(holderList, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}).map((item) => item.code);
 
     const finacial = database.collection("finacial");
     const finacialList = await finacial
@@ -65,7 +65,7 @@ function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquid
     var jgccDiff = jgccTotal - jgcc07;
     if (
       filterList.length >= numOfholderType &&
-      sdltgd[9].FREE_HOLDNUM_RATIO >= tenthLiquidStockRatio &&
+      filterList[9].FREE_HOLDNUM_RATIO >= tenthLiquidStockRatio &&
       gdrsList[1].HOLDER_TOTAL_NUM - gdrsList[0].HOLDER_TOTAL_NUM >= holderReduce &&
       jgccDiff >= liquidStockReduceRatio
     ) {
