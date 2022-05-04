@@ -93,8 +93,9 @@ async function getPriceAndPE(code, { PE, PB, Price }) {
 // run()
 
 function filterHolderBy(list, {holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps}) {
-
+  console.log('holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType', holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType)
   return list.filter(({ gdrs, sdltgd, jgcc }) => {
+    console.log('sdltgd', sdltgd)
     // 股东人数
     var gdrsList = gdrs;
     var filterList = sdltgd
