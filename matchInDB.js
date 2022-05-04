@@ -16,10 +16,9 @@ async function run() {
     await client.connect();
     const database = client.db("stock");
     const holder = database.collection("holder");
-    const query = { "sdltgd.9.FREE_HOLDNUM_RATIO": { $lte: 0.8 } };
     const holderList = await holder
       .find(
-        { "sdltgd.9.FREE_HOLDNUM_RATIO": { $lte: 0.8 } },
+        {  },
         { jgcc: 1, sdltgd: 1, gdrs: 1, code: 1 }
       )
       .toArray();
@@ -56,7 +55,6 @@ function filterBy(list) {
         ? jgccList.find((item) => item.ORG_TYPE === "07").TOTAL_SHARES_RATIO
         : 0;
     var jgccDiff = jgccTotal - jgcc07;
-
     if (
       filterList.length >= 5 &&
       sdltgd[9].FREE_HOLDNUM_RATIO >= 0.8 &&
