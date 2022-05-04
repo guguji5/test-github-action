@@ -1,4 +1,6 @@
 const fs = require("fs");
+const {url} = require('./webapi/db');
+const { MongoClient } = require("mongodb");
 // 1. 十大流通股东机构 or 基金 or 证券公司 .etc 反正不是个人 投资公司 其它 >= 5
 // 2. 第10大流通股东 占比大于0.8%
 // 3. 股东人数季度 减少 大于1000人
