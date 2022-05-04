@@ -1,10 +1,6 @@
 var shell = require('shelljs');
 const fs = require('fs')
 
-const {url} = require('./db');
-const { MongoClient } = require("mongodb");
-
-const client = new MongoClient(url);
 
 // const shStockTxt = fs.readFileSync(`./5.4.txt`, 'utf8');
 // const shStockList = JSON.parse(shStockTxt).Results.map(item=> item.split(',')[1])

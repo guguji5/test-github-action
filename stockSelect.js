@@ -1,6 +1,6 @@
 var shell = require('shelljs');
-// shell.config.silent = true;
-// shell.config.verbose = false;
+shell.config.silent = true;
+shell.config.verbose = false;
 const {argv} = require('./util')
 const PE = argv('pe')
 const PB = argv('pb')
@@ -26,7 +26,11 @@ async function fetchPEPBData(){
     const output= shell.exec(selectCurl).stdout
     return JSON.parse(output.slice(13))
 }
+// async function run(){
+//     const res = await fetchPEPBData(PE, PB)
+//     console.log(res.Results.map(item=> item.split(',')[1]).includes('300068'))
+// }
 
-console.log(fetchPEPBData(PE, PB))
+// run()
 
  
