@@ -2,6 +2,7 @@ const Koa = require('koa');
 const app = new Koa();
 const bodyParser = require('koa-bodyparser');
 const {run } = require('./matchInDB')
+const {send} = require('./sendDingMessage')
 app.use(bodyParser());
 
 app.use(async(ctx, next) => {
@@ -11,7 +12,7 @@ app.use(async(ctx, next) => {
      const codes = await run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps, PE, PB, Price})
      ctx.body = codes
  }else if(ctx.request.path ==='/rebot/send'  ){
-  console.log(ctx.request.body)
+  send(ctx.request.body)
  } else{
     ctx.body = 'damon'
  }
