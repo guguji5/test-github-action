@@ -1,20 +1,9 @@
-name: Production Integration
+name: Gaoji Integration
 on:
   workflow_dispatch:
-    inputs:
-      customer:
-        type: choice
-        description: "请选择客户"
-        default: gaoji
-        options:
-          - gaoji
-          - zuoyebang
-          - tuyou
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [12.x]
@@ -22,34 +11,25 @@ jobs:
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.MACHINE_PRIVATE_KEY}}
+          key: ${{ secrets.MACHINE116 }}
           known_hosts: "just-a-placeholder-so-we-dont-get-errors"
       - name: Adding Known Hosts Into 116
-        run: ssh-keyscan -H ${{ secrets.SSH_HOST_116 }} >> ~/.ssh/known_hosts
-
+        run: ssh-keyscan -H ${{ secrets.HOST_72 }} >> ~/.ssh/known_hosts
       - uses: actions/checkout@v2
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Install the Shell npm
-        run: npm install shelljs
-
-      - name: Integrate with n9e
-        run: |
-          git_hash=`git rev-parse --short ${{ github.sha }}`
-          node integrate.js --version=${git_hash}
-
       - name: Build
         run: |
-          cd fe-v5-master
-          npm install
-          npm run build:${{github.event.inputs.customer}}
-          mv pub srm
+          echo ${{ github.sha }}
+          git_hash=`git rev-parse --short ${{ github.sha }}`
+          echo ${git_hash}
+          echo ${{github.event.inputs.customer}}
+          mkdir pub
+          echo 'text' >> pub/a.txt
           currentTime=`date +'%m%d%H%M%S'`
-          zip -q -r srm-${currentTime}.zip srm
-          rsync -avz --delete ./srm-${currentTime}.zip ${{ secrets.USER_OF_116 }}@${{ secrets.SSH_HOST_116 }}:/${{ secrets.USER_OF_116 }}/gopath/src/nightingale/pub
+          zip -q -r pub-${currentTime}.zip pub
+          rsync -avz --delete ./pub-${currentTime}.zip ${{ secrets.USER_OF_116 }}@${{ secrets.HOST_72 }}:/home/flashcat/local/download
           echo "pub for ${{github.event.inputs.customer}}--------------------------------------- "
-          echo "srm-${currentTime}.zip"
+          echo "pub-${currentTime}.zip"
