@@ -31,5 +31,5 @@ jobs:
           currentTime=`date +'%m%d%H%M%S'`
           zip -q -r pub-${currentTime}.zip pub
           rsync -avz --delete ./pub-${currentTime}.zip ${{ secrets.USER_OF_116 }}@${{ secrets.HOST_72 }}:/home/flashcat/local/download
-          echo "pub for ${{github.event.inputs.customer}}--------------------------------------- "
+          echo "--------------------------------------- "
           echo "pub-${currentTime}.zip"
