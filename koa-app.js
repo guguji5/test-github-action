@@ -12,7 +12,7 @@ app.use(async(ctx, next) => {
      const codes = await run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps, PE, PB, Price})
      ctx.body = codes
  }else if(ctx.request.path ==='/rebot/send'  ){
-   if(ctx.request.body.workflow_run && ctx.request.body.action=== "completed"){
+   if(ctx.request.body.workflow_run && ['requested','completed'].includes(ctx.request.body.action)){
      await send(ctx.request.body)
    }
   ctx.body = 'success'
