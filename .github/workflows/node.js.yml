@@ -35,4 +35,4 @@ jobs:
           echo "pub-${currentTime}.zip"
           curl 'http://117.51.142.214:3000/a' \
             -H 'Content-Type: application/json' \
-            -d '{"msgtype": "text","text": {"content": "${secrets.DOWNLOADLINK}/pub-${currentTime}.zip"}}'
+            -d '{"msgtype": "text","text": {"content": ${secrets.DOWNLOADLINK}/pub-${currentTime}.zip}}'
