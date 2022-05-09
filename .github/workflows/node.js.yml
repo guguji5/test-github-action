@@ -33,4 +33,4 @@ jobs:
           rsync -avz --delete ./pub-${currentTime}.zip ${{ secrets.USER_OF_116 }}@${{ secrets.HOST_72 }}:/home/flashcat/local/download
           echo "--------------------------------------- "
           echo "pub-${currentTime}.zip"
-          curl 'https://oapi.dingtalk.com/robot/send?access_token=5587436e3116a6b60d4861a8f70399836d37a1a82623020cf2b15da57c06a228' -H 'Content-Type: application/json' -d '{"msgtype": "text","text": {"content": "wget '${{ secrets.DOWNLOADLINK }}/pub-${currentTime}'"}}'
+          echo `curl 'https://oapi.dingtalk.com/robot/send?access_token=5587436e3116a6b60d4861a8f70399836d37a1a82623020cf2b15da57c06a228' -H 'Content-Type: application/json' -d '{"msgtype": "text","text": {"content": "wget '${{ secrets.DOWNLOADLINK }}/pub-${currentTime}'"}}'`
