@@ -1,6 +1,8 @@
 name: Gaoji Integration
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 jobs:
   build:
     runs-on: ubuntu-latest
