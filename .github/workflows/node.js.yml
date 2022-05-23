@@ -29,11 +29,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Build
         run: |
-          echo ${{github.event.inputs.customer}}
+          echo ${{github.event.inputs.n9eBranch}}
           echo ${{ github.sha }}
           git_hash=`git rev-parse --short ${{ github.sha }}`
           echo ${git_hash}
-          echo ${{github.event.inputs.customer}}
           mkdir pub
           echo 'text' >> pub/a.txt
           currentTime=`date +'%m%d%H%M%S'`
