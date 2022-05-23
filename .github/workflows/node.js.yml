@@ -1,6 +1,11 @@
 name: Gaoji Integration
 on:
   workflow_dispatch:
+    inputs:
+        n9eBranch:
+          type: input
+          description: '请输入fe-v5（n9e）的分支名称'
+          default: stable
   push:
     branches: [main]
 jobs:
@@ -24,6 +29,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Build
         run: |
+          echo ${{github.event.inputs.customer}}
           echo ${{ github.sha }}
           git_hash=`git rev-parse --short ${{ github.sha }}`
           echo ${git_hash}
