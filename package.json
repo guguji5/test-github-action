@@ -17,7 +17,8 @@
   },
   "homepage": "https://github.com/guguji5/test-git-action#readme",
   "devDependencies": {
-    "shelljs": "^0.8.5"
+    "shelljs": "^0.8.5",
+    "appdynamics": "22.5.0"
   },
   "dependencies": {
     "chalk": "^5.0.1",
