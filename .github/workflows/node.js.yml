@@ -6,13 +6,14 @@ on:
           type: input
           description: '请输入fe-v5（n9e）的分支名称'
           default: stable
-        feat:
-          type: choice
-          description: Make a choice
-          options:
-            - foo
-            - bar
-            - baz
+        feats:
+          type: input
+          description: 请选择付费功能
+          default: COMMON_DS,ALERT_ES_DS,ALERT_AI
+        n9eOnly:
+          description: '是否单独build夜莺'
+          required: false 
+          type: boolean 
   push:
     branches: [main]
 jobs:
