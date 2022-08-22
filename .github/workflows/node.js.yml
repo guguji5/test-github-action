@@ -6,6 +6,13 @@ on:
           type: input
           description: '请输入fe-v5（n9e）的分支名称'
           default: stable
+        feat:
+          type: choice
+          description: Make a choice
+          options:
+            - foo
+            - bar
+            - baz
   push:
     branches: [main]
 jobs:
