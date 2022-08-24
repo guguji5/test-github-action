@@ -10,25 +10,25 @@ var algorithm = 'sha256';
 app.use(bodyParser());
 
 app.use(async(ctx, next) => {
-  console.log('secret', secret)
-  console.log('body',ctx.request.body)
   hmac = crypto.createHmac(algorithm, secret);    
   hmac.write(JSON.stringify(ctx.request.body)); // write in to the stream
   hmac.end();       // can't read from the stream until you call end()
   hash = hmac.read().toString('hex');    // read out hmac digest
-  console.log("Method 1: ", hash);
-
- const {holderReduce=0, liquidStockReduceRatio=0, tenthLiquidStockRatio=0, numOfholderType=1, eps=0, PE=100, PB=100, Price=1000}=ctx.request.query
- if(ctx.request.path ==='/'){
-     const codes = await run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps, PE, PB, Price})
-     ctx.body = codes
- }else if(ctx.request.path ==='/rebot/send'  ){
-   if(ctx.request.body.workflow_run && ['requested','completed'].includes(ctx.request.body.action)){
-     await send(ctx.request.body)
-   }
-  ctx.body = 'success'
- } else{
-    ctx.body = 'damon'
+  if(ctx.request.header['x-hub-signature-256']!=='sha256='+hash){
+    ctx.body = 'bad man, kuai zou'
+  }else{
+    const {holderReduce=0, liquidStockReduceRatio=0, tenthLiquidStockRatio=0, numOfholderType=1, eps=0, PE=100, PB=100, Price=1000}=ctx.request.query
+    if(ctx.request.path ==='/'){
+      const codes = await run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps, PE, PB, Price})
+      ctx.body = codes
+    }else if(ctx.request.path ==='/rebot/send'  ){
+      if(ctx.request.body.workflow_run && ['requested','completed'].includes(ctx.request.body.action)){
+        await send(ctx.request.body)
+      }
+      ctx.body = 'success'
+    } else{
+      ctx.body = 'damon'
+    }
  }
   await next();
 });
