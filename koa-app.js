@@ -3,13 +3,21 @@ const app = new Koa();
 const bodyParser = require('koa-bodyparser');
 const {run } = require('./matchInDB')
 const {send} = require('./sendDingMessage')
-app.use(async(ctx, next) => {
-  console.log(ctx.body)
-  await next()
-})
+var crypto = require('crypto');
+var secret = process.env.Token
+var algorithm = 'sha256'; 
+
 app.use(bodyParser());
 
 app.use(async(ctx, next) => {
+  console.log('secret', secret)
+  console.log('body',ctx.request.body)
+  hmac = crypto.createHmac(algorithm, secret);    
+  hmac.write(JSON.stringify(ctx.request.body)); // write in to the stream
+  hmac.end();       // can't read from the stream until you call end()
+  hash = hmac.read().toString('hex');    // read out hmac digest
+  console.log("Method 1: ", hash);
+
  const {holderReduce=0, liquidStockReduceRatio=0, tenthLiquidStockRatio=0, numOfholderType=1, eps=0, PE=100, PB=100, Price=1000}=ctx.request.query
  if(ctx.request.path ==='/'){
      const codes = await run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps, PE, PB, Price})
