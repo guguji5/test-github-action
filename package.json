@@ -17,11 +17,11 @@
   },
   "homepage": "https://github.com/guguji5/test-git-action#readme",
   "devDependencies": {
-    "shelljs": "^0.8.5",
-    "appdynamics": "22.5.0"
+    "shelljs": "^0.8.5"
   },
   "dependencies": {
     "chalk": "^5.0.1",
+    "crypto": "^1.0.1",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "mongodb": "^4.5.0"
