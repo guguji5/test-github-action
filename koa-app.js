@@ -6,7 +6,7 @@ const {send} = require('./sendDingMessage')
 const {trigger} = require('./triggerJenkins')
 var crypto = require('crypto');
 var secret = process.env.Token
-var pwd= process.env.pwd
+var pwd= process.env.Pwd
 var algorithm = 'sha256'; 
 
 app.use(bodyParser());
