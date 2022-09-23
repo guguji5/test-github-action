@@ -34,4 +34,4 @@ app.use(async(ctx, next) => {
   await next();
 });
 
-app.listen(3000);
+app.listen(3002);
