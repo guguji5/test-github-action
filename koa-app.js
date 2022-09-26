@@ -8,8 +8,6 @@ var crypto = require('crypto');
 var secret = process.env.Token
 var pwd= process.env.Pwd
 var algorithm = 'sha256'; 
-console.log('secret', secret)
-console.log('pwd', pwd)
 
 app.use(bodyParser());
 
@@ -22,7 +20,7 @@ app.use(async(ctx, next) => {
   if(ctx.request.path ==='/'){
     const codes = await run({holderReduce, liquidStockReduceRatio, tenthLiquidStockRatio, numOfholderType, eps, PE, PB, Price})
     ctx.body = codes
-  }else if(ctx.request.path ==='/rebot/send' && ctx.request.header['x-hub-signature-256']!=='sha256='+hash  ){
+  }else if(ctx.request.path ==='/rebot/send' && ctx.request.header['x-hub-signature-256']==='sha256='+hash  ){
     if(ctx.request.body.workflow_run && ['requested','completed'].includes(ctx.request.body.action)){
       await send(ctx.request.body)
     }
