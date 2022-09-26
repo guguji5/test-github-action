@@ -8,6 +8,8 @@ var crypto = require('crypto');
 var secret = process.env.Token
 var pwd= process.env.Pwd
 var algorithm = 'sha256'; 
+console.log('secret', secret)
+console.log('pwd', pwd)
 
 app.use(bodyParser());
 
