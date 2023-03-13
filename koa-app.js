@@ -8,7 +8,8 @@ var crypto = require('crypto');
 var secret = process.env.Token
 var pwd= process.env.Pwd
 var algorithm = 'sha256'; 
-
+const cors = require('@koa/cors')
+app.use(cors())
 app.use(bodyParser());
 
 app.use(async(ctx, next) => {
@@ -28,6 +29,9 @@ app.use(async(ctx, next) => {
   }else if(ctx.request.path ==='/trigger' && ctx.request.querystring.endsWith('.zip') ){
     trigger(ctx.request.querystring, pwd)
     ctx.body = 'success'
+  }else if(ctx.request.path ==='/sentry'){
+    console.log(req.body)
+    ctx.body = 'sentry'
   } else{
     ctx.body = 'damon'
   }
