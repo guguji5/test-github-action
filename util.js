@@ -1,3 +1,6 @@
+const path = require('path');
+const fs = require('fs');
+const outputPath = path.resolve('./', 'output.json');
 const argv = key => {
     // Return true if the key exists and a value is defined
     if ( process.argv.includes( `--${ key }` ) ) return true;
@@ -9,4 +12,11 @@ const argv = key => {
     
     return value.replace( `--${ key }=` , '' );
 }
-module.exports = {argv}
+
+const printLog = str =>{
+    if (fs.existsSync(outputPath)) {
+        fs.unlinkSync(outputPath);
+      }
+    fs.writeFile(outputPath, str, null, () => {});
+}
+module.exports = {argv, printLog}
