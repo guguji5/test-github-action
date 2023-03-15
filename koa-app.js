@@ -4,14 +4,14 @@ const bodyParser = require('koa-bodyparser')
 const { run } = require('./matchInDB')
 const { send, sentryNotifyDingTalk } = require('./sendDingMessage')
 const { trigger } = require('./triggerJenkins')
-const {printLog}  = require('./util')
+const { printLog } = require('./util')
 var crypto = require('crypto')
 var secret = process.env.Token
 var pwd = process.env.Pwd
 var algorithm = 'sha256'
 const cors = require('@koa/cors');
 app.use(cors());
-app.use(bodyParser({enableTypes:['text','json']}))
+app.use(bodyParser({ enableTypes: ['text', 'json'] }))
 
 app.use(async (ctx, next) => {
 	hmac = crypto.createHmac(algorithm, secret)
@@ -50,15 +50,15 @@ app.use(async (ctx, next) => {
 		const query = ctx.request.query
 		trigger(query.target, query.zipstr, pwd)
 		ctx.body = 'success'
-	} else if(ctx.request.path === '/sentry'){
-    try{
-      const objBody =  JSON.parse(ctx.request.body)
-      objBody.data && sentryNotifyDingTalk(objBody.data)
-    }catch(e){
-      console.error(e)
-    }
-    
-		ctx.body = 'damon'
+	} else if (ctx.request.path === '/sentry') {
+		try {
+			const objBody = JSON.parse(ctx.request.body)
+			objBody.data && sentryNotifyDingTalk(objBody.data)
+		} catch (e) {
+			console.error(e)
+		}
+
+		ctx.body = 'upload sentry successfully'
 	}
 	await next()
 })
