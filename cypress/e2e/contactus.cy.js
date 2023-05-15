@@ -6,6 +6,6 @@ describe('联系销售页面', () => {
 //     cy.get('input[id=phone]').type('00000000')
 //     cy.get('button[type=submit]').click()
 //     cy.get('div#contactResultModal').should('be.visible').should('have.css', 'display', 'block')
-    cy.get('button[type=submit]').should('be.visible')
+    cy.get('div#contactResultModal').should('be.visible')
   })
 })
