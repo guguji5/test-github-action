@@ -1,51 +1,18 @@
-name: Gaoji Integration
+name: Automatic Tests
 on:
-  workflow_dispatch:
-    inputs:
-        n9eBranch:
-          type: input
-          description: '请输入fe-v5（n9e）的分支名称'
-          default: stable
-        feats:
-          type: input
-          description: 请选择付费功能
-          default: COMMON_DS,ALERT_ES_DS,ALERT_AI
-        n9eOnly:
-          description: '是否单独build夜莺'
-          required: false 
-          type: boolean 
   push:
     branches: [main]
+    
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x]
+  cypress-run:
+    runs-on: ubuntu-22.04
     steps:
-      - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+      # Install NPM dependencies, cache them correctly
+      # and run all Cypress tests
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
         with:
-          key: ${{ secrets.MACHINE116 }}
-          known_hosts: "just-a-placeholder-so-we-dont-get-errors"
-      - name: Adding Known Hosts Into 116
-        run: ssh-keyscan -H ${{ secrets.HOST_72 }} >> ~/.ssh/known_hosts
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Build
-        run: |
-          echo ${{github.event.inputs.n9eBranch}}
-          echo ${{ github.sha }}
-          git_hash=`git rev-parse --short ${{ github.sha }}`
-          echo ${git_hash}
-          mkdir pub
-          echo 'text' >> pub/a.txt
-          currentTime=`date +'%m%d%H%M%S'`
-          zip -q -r pub-${currentTime}.zip pub
-          rsync -avz --delete ./pub-${currentTime}.zip ${{ secrets.USER_OF_116 }}@${{ secrets.HOST_72 }}:/home/flashcat/local/download
-          echo "--------------------------------------- "
-          echo "pub-${currentTime}.zip"
-          curl 'https://oapi.dingtalk.com/robot/send?access_token=5587436e3116a6b60d4861a8f70399836d37a1a82623020cf2b15da57c06a228' -H 'Content-Type: application/json' -d '{"msgtype": "text","text": {"content": "'pub-${currentTime}'"}}'
+          build: npm run build
+          start: npm start
