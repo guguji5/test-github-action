@@ -1,7 +1,6 @@
 name: Automatic Tests
 on:
-  schedule:
-    - cron: '20 7 * * *'
+  push:
 
 jobs:
   cypress-run:
@@ -15,5 +14,6 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
+          date: date
           install: npm install
           build: npm run test
