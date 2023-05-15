@@ -1,6 +1,7 @@
 name: Automatic Tests
 on:
-  push:
+  schedule:
+    - cron: '42 07 * * *'
 
 jobs:
   cypress-run:
