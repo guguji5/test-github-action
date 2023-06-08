@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: '30 10 * * *'
     - cron: '28 10 * * *'
+  workflow_dispatch:
+  push:
 
 jobs:
   cypress-run:
@@ -13,8 +15,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Cypress run
-        uses: cypress-io/github-action@v5
-        with:
-          install: npm install
-          build: npm run test
+      - name: Zip
+        run: |
+          currentTime=`date +'%m%d%H%M%S'`
+          echo ${currentTime}.zip
+          echo "currentTime=${currentTime}" >> $GITHUB_ENV
+
+      - name: Send to artifactory
+        run: |
+          echo "srm-${currentTime}.zip"
