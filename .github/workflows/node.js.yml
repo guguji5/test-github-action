@@ -24,3 +24,4 @@ jobs:
       - name: Send to artifactory
         run: |
           echo "srm-${currentTime}.zip"
+          mv ./srm-${currentTime}.zip ..
