@@ -50,5 +50,9 @@ module.exports = {
         });
         
 
+    },
+    deploy9000: async (pwd) => {
+      const cmd =`curl 'http://10.206.16.3:8090/job/build_fc-frontend_9000/buildWithParameters?token=fc-frontend&srm_branch=pre&n9e_branch=main' --user admin:${pwd}`
+      shell.exec(cmd);
     }
 };
